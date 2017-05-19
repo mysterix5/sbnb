@@ -53,6 +53,10 @@ int CloseHalfExpensive::IndexOfNextVariableToFix(const IloNumArray &numbers) {
 					maxValueIgnoringDelta=std::abs(coef[i]);
 					indexIgnoringDelta=i;
 				}
+				//				if (std::abs(temp-0.5)>maxValueIgnoringDelta){
+				//					maxValueIgnoringDelta=std::abs(temp-0.5);
+				//					indexIgnoringDelta=i;
+				//				}
 			}
 		}
 	}
