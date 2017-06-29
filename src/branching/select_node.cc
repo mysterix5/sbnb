@@ -77,5 +77,6 @@ std::vector<int> AllFractional::IndexOfNextVariableToFix(const IloNumArray &numb
 	    indizes.insert(indizes.end(),i);
 	}
     }
+//    std::cout<<"allfrac "<<indizes.size()<<std::endl;
     return indizes;
 }

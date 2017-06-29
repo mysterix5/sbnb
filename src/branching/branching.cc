@@ -24,6 +24,8 @@ std::vector<IloConstraint*> Branching::Branch(IloNumArray &solutions, IloNumVarA
 	sub_constraints.insert(sub_constraints.end(), greater_than_or_equal);
     }
 
+//    std::cout<<"branch "<<sub_constraints.size()<<std::endl;
+
     return sub_constraints;
 }
 

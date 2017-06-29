@@ -124,7 +124,7 @@ void SolveLP(int selection_flag, int branching_flag, bool verbose_flag, char* fi
     try {
 	cplex.setOut(env.getNullStream());
 	cplex.importModel(model, file_path, objective, vars, constraints);
-	resetVarsFromObjective(&cplex,&vars);
+//	resetVarsFromObjective(&cplex,&vars);
 
 
     } catch (IloException& e) {
@@ -164,7 +164,7 @@ void SolveLP(int selection_flag, int branching_flag, bool verbose_flag, char* fi
 	branching_rule = new CloseHalfExpensive(coef,cplex.getParam(IloCplex::EpRHS));
 	break;
     default:
-	branching_rule = new FirstFractional(cplex.getParam(IloCplex::EpRHS));
+	branching_rule = new AllFractional(cplex.getParam(IloCplex::EpRHS));
     }
 
 
