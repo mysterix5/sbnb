@@ -3,10 +3,14 @@ A Branch-and-Bound framework that keeps things simple
 ## Usage
 sbnb has a simple command line interface with a few flags.
 
-    sbnb [-d|-b] [-f] [-v] [-c] file_path
+    sbnb [-d|-b|-e] [-f] [-v] [-c] file_path
         -d: Set node selection to 'Depth first traversal' (default)
         -b: Set node selection to 'Breadth first traversal'
-        -f: Set branching rule to 'First fractional' (default)
+        -e: Set node selection to 'Best first traversal'
+        -f: Set branching rule to 'First fractional'
+        -g: Set branching rule to 'Close Half'
+        -i: Set branching rule to 'Close Half Expensive'
+        -j: Set branching rule to 'Strong Branching' (default)
         -v: Enable verbose output
         -c: Compare with Cplex Solver
         file_path: Location of linear problem file (.lp/.mps file formats). REQUIRED
