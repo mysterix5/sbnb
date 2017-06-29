@@ -2,7 +2,6 @@
 #include <ctime>
 #include <string>
 #include "core/branch_and_bound.h"
-#include "node_selection/breadth_first_traversal.h"
 #include "statistics/cplex_solver.h"
 
 using namespace std;
@@ -14,7 +13,7 @@ void setObjectiveCoefficients(IloCplex* cplex, vector<double>* coef);
 void resetVarsFromObjective(IloCplex* cplex, IloNumVarArray* vars);
 
 int main(int argc, char* argv[]) {
-    int selection_flag = -1; // Depth First Traversal = 0, Breadth First Traversal = 1
+    int selection_flag = -1; // Depth First Traversal = 0, Breadth First Traversal = 1, Best First Traversal = 2
     int branching_flag = -1; // First Fractional = 0, Close Half = 1, Close Half Expensive = 2
     bool verbose_flag = false;
     bool compare_flag = false;
@@ -22,21 +21,28 @@ int main(int argc, char* argv[]) {
     int option_character;
     opterr = 0;
 
-    while ((option_character = getopt (argc, argv, "dbfgivch")) != -1)
+    while ((option_character = getopt (argc, argv, "dbefgivch")) != -1)
 	switch (option_character) {
 	case 'd':
 	    if (selection_flag > -1) {
-		cerr << "-d option is mutually exclusive with -b. See \"sbnb -h for help.\"" << endl;
+		cerr << "-d option is mutually exclusive with -b and -e. See \"sbnb -h for help.\"" << endl;
 		return 0;
 	    }
 	    selection_flag = 0;
 	    break;
 	case 'b':
 	    if (selection_flag > -1) {
-		cerr << "-b option is mutually exclusive with -d. See \"sbnb -h for help.\"" << endl;
+		cerr << "-b option is mutually exclusive with -d and -e. See \"sbnb -h for help.\"" << endl;
 		return 0;
 	    }
 	    selection_flag = 1;
+	    break;
+	case 'e':
+	    if (selection_flag > -1) {
+		cerr << "-e option is mutually exclusive with -d and -b. See \"sbnb -h for help.\"" << endl;
+		return 0;
+	    }
+	    selection_flag = 2;
 	    break;
 	case 'f':
 	    if (branching_flag > -1) {
@@ -93,9 +99,10 @@ int main(int argc, char* argv[]) {
 }
 
 void ShowUsage() {
-    cout << "USAGE: sbnb [-d|-b] [-f|-h|-i] [-v] [-c] file_path" << std::endl;
+    cout << "USAGE: sbnb [-d|-b|-e] [-f|-g|-i] [-v] [-c] file_path" << std::endl;
     cout << "\t -d: Set node selection to 'Depth first traversal' (default)" << std::endl;
     cout << "\t -b: Set node selection to 'Breadth first traversal'" << std::endl;
+    cout << "\t -e: Set node selection to 'Best first traversal'" << std::endl;
     cout << "\t -f: Set branching rule to 'First fractional' (default)" << std::endl;
     cout << "\t -g: Set branching rule to 'close half'" << std::endl;
     cout << "\t -i: Set branching rule to 'close half expensive'" << std::endl;
@@ -117,12 +124,13 @@ void SolveLP(int selection_flag, int branching_flag, bool verbose_flag, char* fi
     try {
 	cplex.setOut(env.getNullStream());
 	cplex.importModel(model, file_path, objective, vars, constraints);
-	resetVarsFromObjective(&cplex,&vars);
+//	resetVarsFromObjective(&cplex,&vars);
 
 
     } catch (IloException& e) {
 	cerr << "Error: " << e << endl;
     }
+
 
 
     NodeSelection* node_selection;
@@ -135,6 +143,9 @@ void SolveLP(int selection_flag, int branching_flag, bool verbose_flag, char* fi
 	break;
     case 1:
 	node_selection = new BreadthFirstTraversal();
+	break;
+    case 2:
+	node_selection = new BestFirstTraversal(cplex.getObjective().getSense() == IloObjective::Sense::Maximize);
 	break;
     default:
 	node_selection = new DepthFirstTraversal();
@@ -163,7 +174,7 @@ void SolveLP(int selection_flag, int branching_flag, bool verbose_flag, char* fi
     bnb.optimize();
 
     cout << endl << "------- Branch And Bound Summary -------" << endl;
-    //	cout << "Variable Values: " << bnb.GetBestSolution() << endl;
+    cout << "Variable Values ("<<bnb.GetBestSolution().getSize()<<"): " << bnb.GetBestSolution() << endl;
     cout << "Objective Value: " << bnb.GetGlobalPrimalBound() << endl;
     cout << "Max Node Level: " << bnb.GetStatistics().maxLevel << endl;
     cout << "Computed Nodes: " << bnb.GetStatistics().nNodes << endl;
@@ -188,6 +199,7 @@ void CompareWithCplex(char* file_path) {
 	cplex_solver.Solve();
 
 	cout << "------- Cplex Statistics -------" << endl;
+	cout << "Variable Values ("<<cplex_solver.getSolution().getSize()<<"): " << cplex_solver.getSolution() << endl;
 	cout << "Objective Value: " << cplex_solver.global_primal_bound_ << endl;
 	cout << "Computed Nodes: " << cplex_solver.cplex_.getNnodes() << endl;
 	cout << "Elapsed Time: " << cplex_solver.cplex_.getTime() << " sec" << endl;
@@ -201,13 +213,13 @@ void CompareWithCplex(char* file_path) {
 void resetVarsFromObjective(IloCplex* cplex, IloNumVarArray* vars){
     IloExpr::LinearIterator linIterator_ = cplex->getObjective().getLinearIterator();
     vars->clear();
-    //	std::cout<<"vars:"<<std::endl;
+//    std::cout<<"vars:"<<std::endl;
     while (linIterator_.ok()){
-	//		std::cout<<linIterator_.getVar()<<"\t";
+//	std::cout<<linIterator_.getVar()<<"\t";
 	vars->add(linIterator_.getVar());
 	++linIterator_;
     }
-    //	std::cout<<std::endl;
+//    std::cout<<std::endl;
 }
 
 void setObjectiveCoefficients(IloCplex* cplex, vector<double>* coef){
