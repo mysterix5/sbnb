@@ -70,7 +70,7 @@ std::vector<int> CloseHalfExpensive::IndexOfNextVariableToFix(const IloNumArray 
     return indizes;
 }
 
-std::vector<int> AllFractional::IndexOfNextVariableToFix(const IloNumArray &numbers) {
+std::vector<int> StrongBranching::IndexOfNextVariableToFix(const IloNumArray &numbers) {
     std::vector<int> indizes;
     for (int i = 0; i < numbers.getSize(); i++) {
 	if (IsFractional(numbers[i])!=0) {

@@ -40,7 +40,7 @@ protected:
 
 #endif //BNB_INDEX_OF_FIRST_FRACTIONAL_FUNCTION_H
 
-class AllFractional : public Branching {
+class StrongBranching : public Branching {
     using Branching::Branching;
 protected:
     std::vector<int> IndexOfNextVariableToFix(const IloNumArray &numbers);

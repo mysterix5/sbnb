@@ -1,6 +1,7 @@
 #include <iostream>
 #include <ctime>
 #include <string>
+#include <unistd.h>
 #include "core/branch_and_bound.h"
 #include "statistics/cplex_solver.h"
 
@@ -14,14 +15,14 @@ void resetVarsFromObjective(IloCplex* cplex, IloNumVarArray* vars);
 
 int main(int argc, char* argv[]) {
     int selection_flag = -1; // Depth First Traversal = 0, Breadth First Traversal = 1, Best First Traversal = 2
-    int branching_flag = -1; // First Fractional = 0, Close Half = 1, Close Half Expensive = 2
+    int branching_flag = -1; // First Fractional = 0, Close Half = 1, Close Half Expensive = 2, StrongBranch = 3
     bool verbose_flag = false;
     bool compare_flag = false;
     char *file_path = NULL;
     int option_character;
     opterr = 0;
 
-    while ((option_character = getopt (argc, argv, "dbefgivch")) != -1)
+    while ((option_character = getopt (argc, argv, "dbefgijvch")) != -1)
 	switch (option_character) {
 	case 'd':
 	    if (selection_flag > -1) {
@@ -46,25 +47,32 @@ int main(int argc, char* argv[]) {
 	    break;
 	case 'f':
 	    if (branching_flag > -1) {
-		cerr << "-f option is mutually exclusive with -g and -i. See \"sbnb -h for help.\"" << endl;
+		cerr << "-f option is mutually exclusive with -g, -i and -j. See \"sbnb -h for help.\"" << endl;
 		return 0;
 	    }
 	    branching_flag = 0;
 	    break;
 	case 'g':
 	    if (branching_flag > -1) {
-		cerr << "-g option is mutually exclusive with -f and -i. See \"sbnb -h for help.\"" << endl;
+		cerr << "-g option is mutually exclusive with -f, -i and -j. See \"sbnb -h for help.\"" << endl;
 		return 0;
 	    }
 	    branching_flag = 1;
 	    break;
 	case 'i':
 	    if (branching_flag > -1) {
-		cerr << "-i option is mutually exclusive with -f and -g. See \"sbnb -h for help.\"" << endl;
+		cerr << "-i option is mutually exclusive with -f, -g and -j. See \"sbnb -h for help.\"" << endl;
 		return 0;
 	    }
 	    branching_flag = 2;
 	    break;
+	case 'j':
+		if (branching_flag > -1) {
+		cerr << "-j option is mutually exclusive with -f, -g and -i. See \"sbnb -h for help.\"" << endl;
+		return 0;
+		}
+		branching_flag = 3;
+		break;
 	case 'v':
 	    verbose_flag = true;
 	    break;
@@ -99,13 +107,14 @@ int main(int argc, char* argv[]) {
 }
 
 void ShowUsage() {
-    cout << "USAGE: sbnb [-d|-b|-e] [-f|-g|-i] [-v] [-c] file_path" << std::endl;
+    cout << "USAGE: sbnb [-d|-b|-e] [-f|-g|-i|-j] [-v] [-c] file_path" << std::endl;
     cout << "\t -d: Set node selection to 'Depth first traversal' (default)" << std::endl;
     cout << "\t -b: Set node selection to 'Breadth first traversal'" << std::endl;
     cout << "\t -e: Set node selection to 'Best first traversal'" << std::endl;
     cout << "\t -f: Set branching rule to 'First fractional' (default)" << std::endl;
-    cout << "\t -g: Set branching rule to 'close half'" << std::endl;
-    cout << "\t -i: Set branching rule to 'close half expensive'" << std::endl;
+    cout << "\t -g: Set branching rule to 'Close half'" << std::endl;
+    cout << "\t -i: Set branching rule to 'Close half expensive'" << std::endl;
+    cout << "\t -j: Set branching rule to 'Strong Branching'" << std::endl;
     cout << "\t -v: Enable verbose output" << std::endl;
     cout << "\t -c: Compare with Cplex Solver" << std::endl;
     cout << "\t file_path: Location of linear problem file (.lp/.mps file formats). REQUIRED " << std::endl;
@@ -163,8 +172,11 @@ void SolveLP(int selection_flag, int branching_flag, bool verbose_flag, char* fi
 	setObjectiveCoefficients(&cplex,&coef);
 	branching_rule = new CloseHalfExpensive(coef,cplex.getParam(IloCplex::EpRHS));
 	break;
+    case 3:
+    branching_rule = new StrongBranching(cplex.getParam(IloCplex::EpRHS));
+    break;
     default:
-	branching_rule = new AllFractional(cplex.getParam(IloCplex::EpRHS));
+	branching_rule = new StrongBranching(cplex.getParam(IloCplex::EpRHS));
     }
 
 
