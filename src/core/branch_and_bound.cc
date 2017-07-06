@@ -185,8 +185,8 @@ void BranchAndBound::GenerateSubproblems(std::vector<IloConstraint*> &branched_c
     parent_node->SetFirstChild(sub_problem_node_1);
     sub_problem_node_1->SetNextSibling(sub_problem_node_2);
 
-    node_selection_.AddNode(sub_problem_node_1);
     node_selection_.AddNode(sub_problem_node_2);
+    node_selection_.AddNode(sub_problem_node_1);
 }
 
 double BranchAndBound::findBestBranchingPair(double objVal1, double objVal2){

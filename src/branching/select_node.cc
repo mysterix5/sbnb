@@ -66,7 +66,7 @@ std::vector<int> CloseHalfExpensive::IndexOfNextVariableToFix(const IloNumArray 
 
     std::vector<int> indizes;
     if(bestIndex!=-1) indizes.insert(indizes.begin(),bestIndex);
-    else if(indexIgnoringDelta!=-1) indizes.insert(indizes.begin(),bestIndex);
+    else if(indexIgnoringDelta!=-1) indizes.insert(indizes.begin(),indexIgnoringDelta);
     return indizes;
 }
 

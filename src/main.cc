@@ -176,7 +176,7 @@ void SolveLP(int selection_flag, int branching_flag, bool verbose_flag, char* fi
     branching_rule = new StrongBranching(cplex.getParam(IloCplex::EpRHS));
     break;
     default:
-	branching_rule = new StrongBranching(cplex.getParam(IloCplex::EpRHS));
+	branching_rule = new FirstFractional(cplex.getParam(IloCplex::EpRHS));
     }
 
 
@@ -211,7 +211,7 @@ void CompareWithCplex(char* file_path) {
 	cplex_solver.Solve();
 
 	cout << "------- Cplex Statistics -------" << endl;
-	cout << "Variable Values ("<<cplex_solver.getSolution().getSize()<<"): " << cplex_solver.getSolution() << endl;
+//	cout << "Variable Values ("<<cplex_solver.getSolution().getSize()<<"): " << cplex_solver.getSolution() << endl;
 	cout << "Objective Value: " << cplex_solver.global_primal_bound_ << endl;
 	cout << "Computed Nodes: " << cplex_solver.cplex_.getNnodes() << endl;
 	cout << "Elapsed Time: " << cplex_solver.cplex_.getTime() << " sec" << endl;
