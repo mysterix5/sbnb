@@ -2,19 +2,19 @@
 #include <ilcplex/ilocplex.h>
 #include "branching/branching.h"
 
-std::vector<int> FirstFractional::IndexOfNextVariableToFix(const IloNumArray &numbers) {
-    std::vector<int> indizes;
+int FirstFractional::IndexOfNextVariableToFix(const IloNumArray &numbers) {
+	int FracVar = -1;
     for (int i = 0; i < numbers.getSize(); i++) {
 	if (IsFractional(numbers[i])!=0) {
-	    indizes.insert(indizes.begin(),i);
-	    return indizes;
+	    FracVar = i;
+	    break;
 	}
     }
-    return indizes;
+    return FracVar;
 }
 
 
-std::vector<int> CloseHalf::IndexOfNextVariableToFix(const IloNumArray &numbers) {
+int CloseHalf::IndexOfNextVariableToFix(const IloNumArray &numbers) {
     int maxIndex=-1;
     double bestValue=1,temp;
 
@@ -29,17 +29,13 @@ std::vector<int> CloseHalf::IndexOfNextVariableToFix(const IloNumArray &numbers)
 	    }
 	}
     }
-
-    std::vector<int> indizes;
-
-    if(maxIndex!=-1) indizes.insert(indizes.begin(),maxIndex);
-    return indizes;
+    return maxIndex;
 }
 
 
 CloseHalfExpensive::CloseHalfExpensive(const std::vector <double> coef_, const double float_precision, const double delta_) : coef(coef_),delta(delta_), Branching(float_precision){}
 
-std::vector<int> CloseHalfExpensive::IndexOfNextVariableToFix(const IloNumArray &numbers) {
+int CloseHalfExpensive::IndexOfNextVariableToFix(const IloNumArray &numbers) {
     int bestIndex=-1,indexIgnoringDelta=-1;
     double maxValue=-1,maxValueIgnoringDelta=-1,temp;
 
@@ -47,11 +43,11 @@ std::vector<int> CloseHalfExpensive::IndexOfNextVariableToFix(const IloNumArray 
 	temp=IsFractional(numbers[i]);
 	if (temp!=0){
 	    if (std::abs(temp-0.5)<delta) {
-		if (std::abs(coef[i])>maxValue){
-		    maxValue=std::abs(coef[i]);
-		    bestIndex=i;
-		}
-	    }else{
+	    	if (std::abs(coef[i])>maxValue){
+	    		maxValue=std::abs(coef[i]);
+	    		bestIndex=i;
+		}}
+	    else{
 		if (std::abs(coef[i])>maxValueIgnoringDelta){
 		    maxValueIgnoringDelta=std::abs(coef[i]);
 		    indexIgnoringDelta=i;
@@ -64,19 +60,19 @@ std::vector<int> CloseHalfExpensive::IndexOfNextVariableToFix(const IloNumArray 
 	}
     }
 
-    std::vector<int> indizes;
-    if(bestIndex!=-1) indizes.insert(indizes.begin(),bestIndex);
-    else if(indexIgnoringDelta!=-1) indizes.insert(indizes.begin(),indexIgnoringDelta);
-    return indizes;
+    int RetVar = -1;
+    if(bestIndex!=-1) RetVar=bestIndex;
+    else RetVar=indexIgnoringDelta;
+    return RetVar;
 }
 
-std::vector<int> StrongBranching::IndexOfNextVariableToFix(const IloNumArray &numbers) {
-    std::vector<int> indizes;
-    for (int i = 0; i < numbers.getSize(); i++) {
-	if (IsFractional(numbers[i])!=0) {
-	    indizes.insert(indizes.end(),i);
-	}
-    }
+int StrongBranching::IndexOfNextVariableToFix(const IloNumArray &numbers) {
+    int StrongestVar;
+//    for (int i = 0; i < numbers.getSize(); i++) {
+//	if (IsFractional(numbers[i])!=0) {
+//	    indizes.insert(indizes.end(),i);
+//	}
+//    }
 //    std::cout<<"allfrac "<<indizes.size()<<std::endl;
-    return indizes;
+    return StrongestVar;
 }

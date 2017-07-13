@@ -145,53 +145,53 @@ void BranchAndBound::GenerateSubproblems(std::vector<IloConstraint*> &branched_c
     sub_problem_node_2->Solve();
     sub_problem_node_2->RemoveFixing();
 
-    int bestIndex=0;
-    double bestValue=findBestBranchingPair(sub_problem_node_1->GetObjectiveValue(),sub_problem_node_2->GetObjectiveValue());
-    double temp;
-
-    for (int i=2; i<branched_constraints.size();i=i+2){
-
-
-	Node* temp1 = new Node(&cplex_, variables_, branched_constraints[i], parent_node, level+1, console_output_);
-	Node* temp2 = new Node(&cplex_, variables_, branched_constraints[i+1], parent_node, level+1, console_output_);
-
-	    parent_node->SetFirstChild(temp1);
-	    temp1->SetNextSibling(temp2);
-
-	temp1->InstallFixing();
-	temp1->Solve();
-	temp1->RemoveFixing();
-
-	temp2->InstallFixing();
-	temp2->Solve();
-	temp2->RemoveFixing();
-
-	temp=findBestBranchingPair(sub_problem_node_1->GetObjectiveValue(),sub_problem_node_2->GetObjectiveValue());
-	if (IsMaximizationProblem() && temp>bestValue){
-	    std::cout<<"max"<<std::endl;
-	    bestIndex=i;
-	    bestValue=temp;
-	    sub_problem_node_1=temp1;
-	    sub_problem_node_2=temp2;
-	}else if (!IsMaximizationProblem() && temp<bestValue){
-	    std::cout<<"min"<<std::endl;
-	    bestIndex=i;
-	    bestValue=temp;
-	    sub_problem_node_1=temp1;
-	    sub_problem_node_2=temp2;
-	}
-    }
-
-    parent_node->SetFirstChild(sub_problem_node_1);
-    sub_problem_node_1->SetNextSibling(sub_problem_node_2);
+//    int bestIndex=0;
+//    double bestValue=findBestBranchingPair(sub_problem_node_1->GetObjectiveValue(),sub_problem_node_2->GetObjectiveValue());
+//    double temp;
+//
+//    for (int i=2; i<branched_constraints.size();i=i+2){
+//
+//
+//	Node* temp1 = new Node(&cplex_, variables_, branched_constraints[i], parent_node, level+1, console_output_);
+//	Node* temp2 = new Node(&cplex_, variables_, branched_constraints[i+1], parent_node, level+1, console_output_);
+//
+//	    parent_node->SetFirstChild(temp1);
+//	    temp1->SetNextSibling(temp2);
+//
+//	temp1->InstallFixing();
+//	temp1->Solve();
+//	temp1->RemoveFixing();
+//
+//	temp2->InstallFixing();
+//	temp2->Solve();
+//	temp2->RemoveFixing();
+//
+//	temp=findBestBranchingPair(sub_problem_node_1->GetObjectiveValue(),sub_problem_node_2->GetObjectiveValue());
+//	if (IsMaximizationProblem() && temp>bestValue){
+//	    std::cout<<"max"<<std::endl;
+//	    bestIndex=i;
+//	    bestValue=temp;
+//	    sub_problem_node_1=temp1;
+//	    sub_problem_node_2=temp2;
+//	}else if (!IsMaximizationProblem() && temp<bestValue){
+//	    std::cout<<"min"<<std::endl;
+//	    bestIndex=i;
+//	    bestValue=temp;
+//	    sub_problem_node_1=temp1;
+//	    sub_problem_node_2=temp2;
+//	}
+//    }
+//
+//    parent_node->SetFirstChild(sub_problem_node_1);
+//    sub_problem_node_1->SetNextSibling(sub_problem_node_2);
 
     node_selection_.AddNode(sub_problem_node_2);
     node_selection_.AddNode(sub_problem_node_1);
 }
 
-double BranchAndBound::findBestBranchingPair(double objVal1, double objVal2){
-    return objVal1+objVal2;
-}
+//double BranchAndBound::findBestBranchingPair(double objVal1, double objVal2){
+//    return objVal1+objVal2;
+//}
 
 const IloNumArray& BranchAndBound::GetBestSolution() const {
     return best_solution_;

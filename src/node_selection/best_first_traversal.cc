@@ -16,7 +16,6 @@ BestFirstTraversal::BestFirstTraversal(){};
 BestFirstTraversal::BestFirstTraversal(bool maxProblem){
     CompareByObjValue* a = new CompareByObjValue();
     a->maxProb=maxProblem;
-    delete a;
 };
 
 

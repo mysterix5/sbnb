@@ -15,8 +15,8 @@ endif
 # CPlex dirs
 #------------------------------------------------------------
 
-CPLEX_DIR      = /opt/ibm/ILOG/CPLEX_Studio1271/cplex
-CONCERT_DIR    = /opt/ibm/ILOG/CPLEX_Studio1271/concert
+CPLEX_DIR      = /Users/Andi/Applications/IBM/ILOG/CPLEX_Studio1271/cplex
+CONCERT_DIR    = /Users/Andi/Applications/IBM/ILOG/CPLEX_Studio1271/concert
 
 # ---------------------------------------------------------------------
 # Compiler selection
@@ -30,9 +30,9 @@ COMPILER = g++
 
 COMPILER_FLAGS = -m64 -O3 -fPIC -fno-strict-aliasing -fexceptions -g -DNDEBUG -DIL_STD -std=c++11
 
-ifeq ($(PLATFORM), Darwin)
-	COMPILER_FLAGS += -stdlib=libstdc++
-endif
+#ifeq ($(PLATFORM), Darwin)
+#	COMPILER_FLAGS += -stdlib=libstdc++
+#endif
 
 # ---------------------------------------------------------------------
 # Link options and libraries
